@@ -7,10 +7,7 @@ import { contactsRoute, host } from '../utilities/api-routes';
 import Contacts from '../components/Contacts';
 import Welcome from '../components/Welcome';
 import ChatBox from '../components/ChatBox';
-import io from 'socket.io-client';
-// import { toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
-
+import { io } from 'socket.io-client';
 
 function Chat() {
 const [contacts, setContacts] = useState([]);
@@ -18,14 +15,6 @@ const [currentUser, setCurrentUser] = useState(undefined);
 const [currentChat, setCurrentChat] = useState(undefined);
 const navigate = useNavigate();
 const socket = useRef();
-
-// const toastOptions = {
-//   position: 'bottom-right',
-//   autoClose: 8000,
-//   pauseOnHover: true,
-//   draggable: true,
-//   theme: 'dark',
-// }
 
 useEffect(() => {
   const confirmUser = async () => {
@@ -50,7 +39,6 @@ useEffect(() => {
     if (currentUser) {
       if (localStorage.getItem('Check-avatar') === 'false') {
         console.log(localStorage.getItem('Check-avatar'));
-        // toast.error('Please select an avatar image.', toastOptions)
         alert('You have to set an avatar image first!')
         navigate('/avatar');
       } else {

@@ -9,3 +9,4 @@ export const avatarRoute = `${host}/api/auth/set-avatar`;
 export const contactsRoute = `${host}/api/users`;
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const getAllMessagesRoute = `${host}/api/messages/getmsg`;
+export const clearChatRoute = `${host}/api/messages/clearchat`;

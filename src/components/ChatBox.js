@@ -1,9 +1,12 @@
 import axios from 'axios';
 import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
-import { getAllMessagesRoute, sendMessageRoute } from '../utilities/api-routes';
+import { clearChatRoute, getAllMessagesRoute, sendMessageRoute } from '../utilities/api-routes';
 import ChatInput from './ChatInput';
 import {v4 as uuidv4} from 'uuid';
+import { FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ChatBox({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
@@ -11,6 +14,13 @@ function ChatBox({ currentChat, socket }) {
 
   const senderId = JSON.parse(localStorage.getItem('ID'));
   const scrollRef = useRef();
+  const toastOptions = {
+    position: 'bottom-right',
+    autoClose: 8000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: 'dark',
+  }
 
   useEffect(() => {
     const fetchChatMessages = async () => {
@@ -38,6 +48,18 @@ const handleSendMsg = async (msg) => {
   msgs.push({fromSelf: true, message: msg});
   setMessages(msgs);
 };
+
+const handleClearChat = async () => {
+  await axios.post(clearChatRoute, {
+    from: senderId,
+    to: currentChat._id,
+  })
+  socket.current.emit('chat-cleared', msg => {
+    setMessages([]);
+    setArrivalMessage({ fromSelf: true, message: msg });
+    console.log(msg);
+  })
+}
 
 useEffect(() => {
   if (socket.current) {
@@ -69,6 +91,10 @@ useEffect(() => {
             <h3>{currentChat.name}</h3>
           </div>
         </div>
+        <div onClick={handleClearChat} className='trash-icon tooltip'>
+          <FaTrash />
+          <span className='tooltip-text'>Clear Chat</span>
+        </div>
       </div>
       <div className="chat-messages">
         {messages.map((message) => {
@@ -87,7 +113,7 @@ useEffect(() => {
           );
         })}
       </div>
-      <ChatInput handleSendMsg={handleSendMsg}/>
+      <ChatInput handleSendMsg={handleSendMsg} />
     </Container>
   )
 }
@@ -105,6 +131,7 @@ const Container = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
+    position: relative;
     .user-details {
       display: flex;
       align-items: center;
@@ -120,6 +147,34 @@ const Container = styled.div`
         }
       }
     }
+    .trash-icon {
+      cursor: pointer;
+      svg {
+        color: white;
+      }
+      .tooltip {
+        position: relative;
+      }
+      
+      span {
+        visibility: hidden;
+        background-color: #fff;
+        color: #131324;
+        text-align: center;
+        padding: 5px;
+        border-radius: 6px;
+        text-wrap: none;
+        position: absolute;
+        top: 4rem;
+        right: 1vw;
+        z-index: 1;
+      }
+      
+      :hover .tooltip-text {
+        visibility: visible;
+      }
+    }
+    
   }
   .chat-messages {
     padding: 1rem 2rem;
