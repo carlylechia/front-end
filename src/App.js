@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import { AuthProvider } from './hooks/user-context';
 import PrivateRoute from './pages/PrivateRoute';
 import SetAvatar from './pages/SetAvatar';
+import Dashboard from './pages/Dashboard';
 
 export default function App() {
   return (
@@ -25,6 +26,11 @@ export default function App() {
           <Route path='/avatar' element={
               <PrivateRoute>
                 <SetAvatar />
+              </PrivateRoute>
+          } />
+          <Route path='/dashboard' element={
+              <PrivateRoute>
+                <Dashboard />
               </PrivateRoute>
           } />
           <Route element={NotFound}/>

@@ -16,6 +16,8 @@ function Navbar() {
 
   const auth = useAuth();
   const loggedIn = JSON.parse(localStorage.getItem('Logged-in'));
+  const username = JSON.parse(localStorage.getItem('Username'));
+  const avatar = JSON.parse(localStorage.getItem('User-avatar'));
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -25,13 +27,30 @@ function Navbar() {
 
   return (
     <nav>
+      {
+      loggedIn
+      ? (<>
+        <div className='user'>
+        <div className="avatar">
+          <img
+            width='50rem'
+            src={`data:image/svg+xml;base64,${avatar}`}
+            alt="avatar"
+          />
+        </div>
+        <h3>{username}</h3>
+      </div>
       <NavLink style={linkStyles} to='/'>Home</NavLink>
+      <NavLink style={linkStyles} to='/dashboard'>Dashboard</NavLink>
       <NavLink style={linkStyles} to='/chat'>Chat</NavLink>
       <NavLink style={linkStyles} to='/avatar'>Avatar</NavLink>
-      {
-        !loggedIn
-        ? <NavLink style={linkStyles} to='/login'>Login</NavLink>
-        : <Button className='tooltip' onClick={handleLogout}><BiPowerOff /> <span className='tooltip-text'>Log-Out</span> </Button>
+      <Button className='tooltip' onClick={handleLogout}><BiPowerOff /> <span className='tooltip-text'>Log-Out</span> </Button>
+      </>)
+      :  (<>
+        <NavLink style={linkStyles} to='/'>Home</NavLink>
+        <NavLink style={linkStyles} to='/login'>Login</NavLink>
+        <NavLink style={linkStyles} to='/register'>Register</NavLink>
+      </>)
       }
     </nav>
   )

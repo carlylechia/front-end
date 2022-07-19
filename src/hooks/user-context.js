@@ -18,8 +18,9 @@ export const AuthProvider = ({children}) => {
     name: '',
     password: '',
   })
-  localStorage.removeItem('Logged-in');
-  localStorage.removeItem('Username');
+  localStorage.clear();
+  // localStorage.removeItem('Logged-in');
+  // localStorage.removeItem('Username');
  }
 
  return (
