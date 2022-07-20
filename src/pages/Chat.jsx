@@ -38,7 +38,6 @@ useEffect(() => {
   const fetchContacts = async () => {
     if (currentUser) {
       if (localStorage.getItem('Check-avatar') === 'false') {
-        console.log(localStorage.getItem('Check-avatar'));
         alert('You have to set an avatar image first!')
         navigate('/avatar');
       } else {

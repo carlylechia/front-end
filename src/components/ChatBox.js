@@ -5,8 +5,6 @@ import { clearChatRoute, getAllMessagesRoute, sendMessageRoute } from '../utilit
 import ChatInput from './ChatInput';
 import {v4 as uuidv4} from 'uuid';
 import { FaTrash } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 function ChatBox({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
@@ -14,13 +12,6 @@ function ChatBox({ currentChat, socket }) {
 
   const senderId = JSON.parse(localStorage.getItem('ID'));
   const scrollRef = useRef();
-  const toastOptions = {
-    position: 'bottom-right',
-    autoClose: 8000,
-    pauseOnHover: true,
-    draggable: true,
-    theme: 'dark',
-  }
 
   useEffect(() => {
     const fetchChatMessages = async () => {
@@ -57,7 +48,6 @@ const handleClearChat = async () => {
   socket.current.emit('chat-cleared', msg => {
     setMessages([]);
     setArrivalMessage({ fromSelf: true, message: msg });
-    console.log(msg);
   })
 }
 
@@ -76,6 +66,10 @@ useEffect(() => {
 useEffect(() => {
   scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 }, [messages]);
+
+const closeEmojis = () => {
+  console.log("yay!");
+}
 
   return (
     <Container>
@@ -176,6 +170,9 @@ const Container = styled.div`
     }
     
   }
+  // .bcg {
+  //   background-color: #00000076;
+  // }
   .chat-messages {
     padding: 1rem 2rem;
     display: flex;
