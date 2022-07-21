@@ -5,11 +5,13 @@ import Navbar from '../components/Navbar';
 import { FaPlusCircle } from 'react-icons/fa';
 import styled from 'styled-components';
 import BoardDetails from '../components/BoardDetails';
+import Loader from '../assets/loader.gif';
 
 const Dashboard = () => {
   const [showForm, setShowForm] = useState(false);
   const [boards, setBoards] = useState([]);
   const [searchField, setSearchField] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const creatorId = JSON.parse(localStorage.getItem('ID'));
 
@@ -27,6 +29,7 @@ const Dashboard = () => {
         creator: creatorId,
       })
       setBoards(response.data);
+      setIsLoading(false);
 
     };
     fetchBoards();
@@ -57,11 +60,17 @@ const Dashboard = () => {
       creator: creatorId
     })
     setBoards(response.data);
+    setIsLoading(false);
   }
 
   return (
-    <Container>
+    <>
       <Navbar />
+      {
+        isLoading
+        ? <Container className='load-center'><img src={Loader} className='loader' alt='loader'/></Container>
+        : 
+      <Container>
       <div className='top'>
         <h2>Dashboard <span>{boards.length} {boards.length < 2 ? "Board" : "Boards"}</span></h2>
         <form onSubmit={e => {
@@ -91,11 +100,30 @@ const Dashboard = () => {
       }
       </div>
     </Container>
+    }
+    </>
   )
 }
 const Container = styled.div `
 background-color: #131324;
 min-height: 100vh;
+.load-center {
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+.loader {
+  max-inline-size: 100%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
 .top {
   background-color: #00000076;
   padding: 3rem;
