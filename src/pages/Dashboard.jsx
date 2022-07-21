@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getBoardsRoute, searchBoardsRoute } from '../utilities/api-routes';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { FaPlusCircle } from 'react-icons/fa';
 import styled from 'styled-components';
@@ -6,6 +8,10 @@ import BoardDetails from '../components/BoardDetails';
 
 const Dashboard = () => {
   const [showForm, setShowForm] = useState(false);
+  const [boards, setBoards] = useState([]);
+  const [searchField, setSearchField] = useState("");
+
+  const creatorId = JSON.parse(localStorage.getItem('ID'));
 
   const inputBoardData = () => {
     setShowForm(true);
@@ -15,13 +21,54 @@ const Dashboard = () => {
     setShowForm(false);
   }
 
+  useEffect(() => {
+    const fetchBoards = async () => {
+      const response = await axios.post(getBoardsRoute, {
+        creator: creatorId,
+      })
+      setBoards(response.data);
+
+    };
+    fetchBoards();
+  }, []);
+
+
+  const handleChange = async e => {
+    setSearchField(e.target.value);
+    if (searchField === '') return boards;
+    setBoards(filteredBoards)
+    };
+
+  const filteredBoards = boards.filter(
+    board => {
+      return (
+        board
+        .name
+        .toLowerCase()
+        .includes(searchField.toLowerCase())
+      );
+    }
+  );
+
+  const handleSearch = async e => {
+    e.preventDefault();
+    const response = await axios.post(searchBoardsRoute, {
+      name: searchField,
+      creator: creatorId
+    })
+    setBoards(response.data);
+  }
+
   return (
     <Container>
       <Navbar />
       <div className='top'>
-        <h2>Dashboard</h2>
-        <form>
-          <input type="search" placeholder='Search boards' name='search' />
+        <h2>Dashboard <span>{boards.length} {boards.length < 2 ? "Board" : "Boards"}</span></h2>
+        <form onSubmit={e => {
+          handleSearch(e)
+          setSearchField("");
+          }}>
+          <input type="search" placeholder='Search boards' name='search' onChange={handleChange}/>
         </form>
       </div>
       <div className='display'>
@@ -32,7 +79,15 @@ const Dashboard = () => {
       {
         showForm
         ? <BoardDetails closeForm={ closeForm }/>
-        : <h3>Show boards</h3>
+        : boards.length > 0
+        ? boards.map((board, index) => {
+          return (
+            <div key={index} className="board" >
+              <h4>{board.name}</h4>
+            </div>
+          )
+        })
+        : <h3 className='no-board'>No boards yet. Click the + sign to create your first board!</h3>
       }
       </div>
     </Container>
@@ -68,11 +123,40 @@ min-height: 100vh;
     padding: 1rem 0.5rem;
     color: #fff
   }
+
+  h2 span {
+    color: #00000076;
+    font-size: 19px;
+    background: silver;
+    padding: 5px;
+    width: fit-content;
+    z-index: -10;
+    border-radius: 5rem;
+  }
 }
 
 .display {
   display: flex;
-  // justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.no-board {
+  color: #fff;
+  margin: 1rem auto;
+}
+
+.board {
+  min-width: 10rem;
+  min-height: 7rem;
+  border: 1px solid silver;
+  border-radius: 5px;
+  background-color: #181A18;
+  margin: 1rem;
+
+  h4 {
+    color: aliceblue;
+    text-align: center;
+  }
 }
 
 `

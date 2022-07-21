@@ -67,9 +67,6 @@ useEffect(() => {
   scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 }, [messages]);
 
-const closeEmojis = () => {
-  console.log("yay!");
-}
 
   return (
     <Container>

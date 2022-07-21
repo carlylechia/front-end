@@ -10,3 +10,7 @@ export const contactsRoute = `${host}/api/users`;
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const getAllMessagesRoute = `${host}/api/messages/getmsg`;
 export const clearChatRoute = `${host}/api/messages/clearchat`;
+
+export const addBoardRoute = `${host}/api/boards/addboard`;
+export const getBoardsRoute = `${host}/api/boards/getboards`;
+export const searchBoardsRoute = `${host}/api/boards/searchboards`;

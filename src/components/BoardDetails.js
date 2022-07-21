@@ -2,14 +2,30 @@ import styled from "styled-components";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Logo from '../assets/logo.png';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { addBoardRoute } from '../utilities/api-routes';
 
 const BoardDetails = ({ closeForm }) => {
+  const [values, setValues] = useState({
+    name: '',
+    votes: 1,
+  })
 
-  const handleSubmit = () => {
+  const creatorId = JSON.parse(localStorage.getItem('ID'));
 
+  const handleAddBoard = async (e) => {
+    const { name } = values;
+    e.preventDefault();
+    await axios.post(addBoardRoute, {
+      creator: creatorId,
+      name,
+    })
+    closeForm();
   }
-  const handleChange = () => {
 
+  const handleChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
   }
 
   const handleClose = (e) => {
@@ -21,13 +37,13 @@ const BoardDetails = ({ closeForm }) => {
     <>
       <FormContainer>
         <div className="dark-bg" onClick={e => handleClose(e)} />
-          <form onSubmit={(e) => handleSubmit(e)}>
+          <form onSubmit={(e) => handleAddBoard(e)}>
             <div className="brand">
               <img src={Logo} alt="placeholder" />
               <h1>Retro-Spec</h1>
             </div>
-            <input type="text" placeholder='Board Name' name='name' onChange={e => handleChange(e)} required/>
-            <input type="text" placeholder='Votes per user' name='votes' onChange={e => handleChange(e)} required/>
+            <input type="text" maxLength="30" placeholder='Board Name' name='name' onChange={e => handleChange(e)} required/>
+            <input type="number" max="10" min="1" placeholder='Votes per user' name='votes' onChange={e => handleChange(e)} required/>
             <div className="btns">
               <button type='submit' className="create">Create Board</button>
               <button type='button' className="close" onClick={e => handleClose(e)}>Close</button>
@@ -38,6 +54,7 @@ const BoardDetails = ({ closeForm }) => {
     </>
   )
 }
+export default BoardDetails
 
 const FormContainer = styled.div`
 .dark-bg {
@@ -137,5 +154,3 @@ input {
   gap: 1rem;
 }
 `;
-
-export default BoardDetails
