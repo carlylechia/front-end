@@ -9,6 +9,8 @@ import { AuthProvider } from './hooks/user-context';
 import PrivateRoute from './pages/PrivateRoute';
 import SetAvatar from './pages/SetAvatar';
 import Dashboard from './pages/Dashboard';
+import Board from './pages/Board';
+// import Board from './pages/Board';
 
 export default function App() {
   return (
@@ -18,6 +20,7 @@ export default function App() {
           <Route path='/' element={<Home />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/board/:id' element={<Board />} />
           <Route path='/chat' element={
               <PrivateRoute>
                 <Chat />

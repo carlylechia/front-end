@@ -4,24 +4,29 @@ import 'react-toastify/dist/ReactToastify.css';
 import Logo from '../assets/logo.png';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { addBoardRoute } from '../utilities/api-routes';
+import { addBoardRoute, setColumns } from '../utilities/api-routes';
+import { useNavigate } from "react-router-dom";
 
 const BoardDetails = ({ closeForm }) => {
+  
   const [values, setValues] = useState({
     name: '',
     votes: 1,
   })
 
   const creatorId = JSON.parse(localStorage.getItem('ID'));
+  const navigate = useNavigate();
 
   const handleAddBoard = async (e) => {
     const { name } = values;
     e.preventDefault();
-    await axios.post(addBoardRoute, {
+    const response = await axios.post(addBoardRoute, {
       creator: creatorId,
       name,
     })
-    closeForm();
+    await setColumns(response.data._id);
+    // console.log(response.data._id);
+    navigate(`/board/${response.data._id}`);
   }
 
   const handleChange = (e) => {

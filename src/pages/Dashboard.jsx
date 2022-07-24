@@ -6,14 +6,20 @@ import { FaPlusCircle } from 'react-icons/fa';
 import styled from 'styled-components';
 import BoardDetails from '../components/BoardDetails';
 import Loader from '../assets/loader.gif';
+import Robot from "../assets/robot.gif";
+import Board from './Board';
+import { NavLink } from 'react-router-dom';
+import { httpClient } from '../utilities/httpClient';
 
 const Dashboard = () => {
   const [showForm, setShowForm] = useState(false);
   const [boards, setBoards] = useState([]);
   const [searchField, setSearchField] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [chosenBoard, setChosenBoard] = useState(undefined);
 
   const creatorId = JSON.parse(localStorage.getItem('ID'));
+  const username = JSON.stringify(localStorage.getItem('Username')).split('\\"')[1];
 
   const inputBoardData = () => {
     setShowForm(true);
@@ -25,20 +31,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchBoards = async () => {
-      const response = await axios.post(getBoardsRoute, {
+      const response = await httpClient.post(getBoardsRoute, {
         creator: creatorId,
       })
       setBoards(response.data);
       setIsLoading(false);
-
     };
     fetchBoards();
   }, []);
 
-
   const handleChange = async e => {
     setSearchField(e.target.value);
-    if (searchField === '') return boards;
     setBoards(filteredBoards)
     };
 
@@ -63,50 +66,64 @@ const Dashboard = () => {
     setIsLoading(false);
   }
 
+  const handleBoardClick = (board) => {
+    setChosenBoard(board);
+    localStorage.setItem("boardId", board._id);
+  }
+
   return (
     <>
       <Navbar />
       {
         isLoading
         ? <Container className='load-center'><img src={Loader} className='loader' alt='loader'/></Container>
-        : 
-      <Container>
-      <div className='top'>
-        <h2>Dashboard <span>{boards.length} {boards.length < 2 ? "Board" : "Boards"}</span></h2>
-        <form onSubmit={e => {
-          handleSearch(e)
-          setSearchField("");
-          }}>
-          <input type="search" placeholder='Search boards' name='search' onChange={handleChange}/>
-        </form>
-      </div>
-      <div className='display'>
-      <Button className='tooltip' onClick={inputBoardData}>
-        <FaPlusCircle />
-        <span className='tooltip-text'>Add a new board</span>
-      </Button>
-      {
-        showForm
-        ? <BoardDetails closeForm={ closeForm }/>
-        : boards.length > 0
-        ? boards.map((board, index) => {
-          return (
-            <div key={index} className="board" >
-              <h4>{board.name}</h4>
+        : chosenBoard === undefined
+        ?
+        <Container>
+        <div className='top'>
+          <h2>Dashboard <span>{boards.length} {boards.length < 2 ? "Board" : "Boards"}</span></h2>
+          <form onSubmit={e => {
+            handleSearch(e)
+            }}>
+            <input type="search" placeholder='Search boards' name='search' onChange={handleChange}/>
+          </form>
+        </div>
+        <div className='display'>
+        <Button className='tooltip' onClick={inputBoardData}>
+          <FaPlusCircle />
+          <span className='tooltip-text'>Add a new board</span>
+        </Button>
+        {
+          showForm
+          ? <BoardDetails closeForm={ closeForm }/>
+          : boards.length > 0
+          ? boards.map((board) => {
+            return (
+              <NavLink key={board.id} to={`/board/${board.id}`}>
+                <div className="board" onClick={() => handleBoardClick(board)} >
+                  <h4>{board.name}</h4>
+                </div>
+              </NavLink>
+            )
+          })
+          : (
+            <div className='no-board'>
+              <img src={Robot} alt="" />
+              <h1>You have no board yet, <span>{username}</span>...</h1>
+              <h3>Click the highlighted + sign above to create your first board!</h3>
             </div>
           )
-        })
-        : <h3 className='no-board'>No boards yet. Click the + sign to create your first board!</h3>
-      }
-      </div>
-    </Container>
+        }
+        </div>
+      </Container>
+      : <Board chosenBoard={chosenBoard} />
     }
     </>
   )
 }
 const Container = styled.div `
 background-color: #131324;
-min-height: 100vh;
+min-height: calc(100vh - 4.4rem);
 .load-center {
   width: 100vw;
   height: 100vh;
@@ -166,21 +183,41 @@ min-height: 100vh;
 .display {
   display: flex;
   flex-wrap: wrap;
+  // align-items: center;
+  justify-content: center;
 }
 
 .no-board {
   color: #fff;
   margin: 1rem auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  img {
+    margin: -5rem 1rem -5rem -10rem
+  }
+  h1 {
+    margin: 0 0 2rem -10rem;
+  }
+  h1 span {
+    color: #4e0eff;
+  }
+  h3 {
+    margin-left: -13rem;
+  }
 }
 
 .board {
-  min-width: 10rem;
-  min-height: 7rem;
+  min-width: 12.5rem;
+  min-height: 8.5rem;
   border: 1px solid silver;
   border-radius: 5px;
   background-color: #181A18;
-  margin: 1rem;
-
+  margin: 1rem 1.5rem 1rem 1.7rem;
+  &:hover {
+    border: 2px solid green;
+    background: black;
+  }
   h4 {
     color: aliceblue;
     text-align: center;
